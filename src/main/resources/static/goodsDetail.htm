@@ -95,6 +95,9 @@
 
     function getDetails() {
         var goodsId = g_getQueryString("goodsId");
+        //Ajax (Asynchronous JavaScript and XML) 是一种用于在网页上进行异步通信的技术。
+        // 它允许网页通过后台服务器与服务器进行数据交换，而不需要刷新整个页面。
+        // 这样可以实现更加流畅和响应式的用户体验。
         $.ajax({
             url: "/goods/detail/" + goodsId,
             type: "GET",
@@ -112,6 +115,7 @@
     }
 
     function render(detail) {
+        // 用于将获取到的商品详情数据渲染到网页上。
         var user = detail.user;
         var goods = detail.goodsVo;
         var remainSeconds = detail.remainSeconds ;
@@ -119,6 +123,7 @@
             $("#userTip").hide();
         }
         $("#goodsName").text(goods.goodsName);
+        // 将商品名称显示在 id 为 "goodsName" 的元素上。
         $("#goodsImg").attr("src", goods.goodsImg);
         $("#startTime").text(new Date(goods.startDate).format("yyyy-MM-dd HH:mm:ss"));
         $("#remainSeconds").val(remainSeconds);

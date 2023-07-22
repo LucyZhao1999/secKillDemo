@@ -59,6 +59,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //秒杀商品表减库存
         SeckillGoods seckillGoods = seckillGoodsService .getOne(new QueryWrapper<SeckillGoods>().eq("goods_id", goods.getId()));
         seckillGoods .setStockCount(seckillGoods .getStockCount() - 1);
+        //gt("stock_count", 0): 这是设置更新的条件之二。它表示在更新时，只更新 stock_count 字段值大于0的记录。这个条件可能用于确保库存大于0时才能进行秒杀。
         boolean result = seckillGoodsService .update(new UpdateWrapper<SeckillGoods>().setSql("stock_count = " + "stock_count-1").eq("goods_id", goods.getId()).gt("stock_count" , 0));
         // seckillGoodsService.updateById(seckillGoods);
         if ( !result){

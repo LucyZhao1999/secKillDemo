@@ -40,30 +40,31 @@ public class SeckillController {
     @Autowired
     private RedisTemplate redisTemplate ;
 
-    @RequestMapping(value = "/doSeckill" , method = RequestMethod .POST) @ResponseBody
+    @RequestMapping(value = "/doSeckill" , method = RequestMethod .POST)
+    @ResponseBody
     public RespBean doSeckill(User user, Long goodsId) {
         if (user == null) {
             return RespBean.error(RespBeanEnum .SESSION_ERROR);
         }
         GoodsVo goods = goodsService .findGoodsVoByGoodsId(goodsId);
-//判断库存
+        //判断库存
         if (goods.getStockCount() < 1) {
             return RespBean.error(RespBeanEnum .EMPTY_STOCK);
         }
-//判断是否重复抢购
-// SeckillOrder seckillOrder = seckillOrderService.getOne(new QueryWrapper<SeckillOrder>().eq("user_id",
-//        user.getId()).eq(
-//        "goods_id",
-//        goodsId));
+        //判断是否重复抢购
+        // SeckillOrder seckillOrder = seckillOrderService.getOne(new QueryWrapper<SeckillOrder>().eq("user_id",
+        //        user.getId()).eq(
+        //        "goods_id",
+        //        goodsId));
         SeckillOrder seckillOrder = (SeckillOrder)
                 redisTemplate .opsForValue().get("order:" + user.getUserId() + ":" + goodsId);
         if (seckillOrder != null) {
             return RespBean.error(RespBeanEnum .REPEATE_ERROR);
         }
         Order order = orderService .seckill(user, goods);
-//        if (null != order) {
-//            return RespBean.success(order);
-//        }
+        //        if (null != order) {
+        //            return RespBean.success(order);
+        //        }
         return RespBean.success(order);
     }
 }
