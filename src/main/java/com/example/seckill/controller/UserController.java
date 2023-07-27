@@ -33,14 +33,14 @@ public class UserController {
         return RespBean.success(user);
     }
 
-    /**
-     * 测试发送RabbitMQ消息
-     */
-    @RequestMapping("/mq")
-    @ResponseBody
-    public void mq() {
-        mqSender.send("Hello");
-    }
+//    /**
+//     * 测试发送RabbitMQ消息
+//     */
+//    @RequestMapping("/mq")
+//    @ResponseBody
+//    public void mq() {
+//        mqSender.send("Hello");
+//    }
 
 
 
