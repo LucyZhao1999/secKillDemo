@@ -22,6 +22,7 @@ import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework .stereotype.Controller;
 import org.springframework .util.CollectionUtils ;
 import org.springframework .util.StringUtils ;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework .web.bind.annotation.RequestMapping ;
 import org.springframework .web.bind.annotation.RequestMethod ;
 import org.springframework .web.bind.annotation.ResponseBody;
@@ -61,13 +62,17 @@ public class SeckillController {
     private Map<Long, Boolean> EmptyStockMap = new HashMap<>();
 
 
-    @RequestMapping(value = "/doSeckill" , method = RequestMethod .POST)
+    @RequestMapping(value = "/{path}/doSeckill" , method = RequestMethod .POST)
     @ResponseBody
-    public RespBean doSeckill(User user, Long goodsId) {
+    public RespBean doSeckill(@PathVariable String path, User user, Long goodsId) {
         if (user == null) {
             return RespBean.error(RespBeanEnum .SESSION_ERROR);
         }
         ValueOperations valueOperations = redisTemplate .opsForValue();
+        boolean check = orderService .checkPath(user,goodsId,path);
+        if (!check){
+            return RespBean.error(RespBeanEnum .REQUEST_ILLEGAL);
+        }
         //判断是否重复抢购
         String seckillOrderJson = (String) valueOperations .get("order:" + user.getUserId() + ":" + goodsId);
         if (!StringUtils .isEmpty(seckillOrderJson)) {
@@ -146,7 +151,22 @@ public class SeckillController {
         return RespBean.success(orderId);
     }
 
-}
+    /**
+     * 获取秒杀地址 *
+     * @param user
+     * @param goodsId
+     * @return
+     */
+    @RequestMapping(value = "/path", method = RequestMethod .GET)
+    @ResponseBody
+    public RespBean getPath(User user, Long goodsId) {
+        if (user == null) {
+            return RespBean.error(RespBeanEnum .SESSION_ERROR);
+        }
+        String str = orderService .createPath(user,goodsId);
+        return RespBean.success(str);
 
+    }
+}
 
 

@@ -20,4 +20,20 @@ public interface IOrderService extends IService<Order> {
     Order seckill(User user, GoodsVo goods);
 
     OrderDetailVo detail(Long orderId);
+
+    /**
+     * 验证秒杀地址
+     * @param user
+     * @param goodsId
+     * @param path
+     * @return */
+    boolean checkPath(User user, Long goodsId, String path);
+
+    /**
+     * 生成秒杀地址
+     * @param user
+     * @param goodsId
+     * @return */
+    String createPath(User user, Long goodsId);
+
 }
