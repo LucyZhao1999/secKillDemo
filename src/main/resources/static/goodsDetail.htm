@@ -44,10 +44,19 @@
                 <span id="seckillTip"></span>
             </td>
             <td>
-                <form id="seckillForm" method="post"
-                      action="/seckill/doSeckill">
-                    <button class="btn btn-primary btn-block" type="submit" id="buyButton" onclick = "getSeckillPath">立即秒杀</button>
-                    <input type="hidden" name="goodsId" id="goodsId"/> </form>
+<!--                <form id="seckillForm" method="post"-->
+<!--                      action="/seckill/doSeckill">-->
+<!--&lt;!&ndash;                    <button class="btn btn-primary btn-block" type="submit" id="buyButton" onclick = "getSeckillPath">立即秒杀</button>&ndash;&gt;-->
+<!--                    <input type="hidden" name="goodsId" id="goodsId"/> </form>-->
+                <div class="row">
+                    <div class="form-inline">
+                        <img id="captchaImg" width="130" height="32" style="display: none" onclick="refreshCaptcha()"/>
+                        <input id="captcha" class="form-control" style="display: none"/> <button class="btn btn-primary" type="button" id="buyButton"
+                                                                                                 onclick="getSeckillPath()">立即秒杀
+                    </button>
+                    </div>
+                </div>
+
             </td>
         </tr>
         <tr>
@@ -71,6 +80,9 @@
             getDetails();
         }
     );
+
+    function refreshCaptcha() {     $("#captchaImg").attr("src",
+        $("#goodsId").val() + "&time=" + newDate())}
 
     function getSeckillPath() {
         var goodsId = $("#goodsId").val();
@@ -202,13 +214,12 @@
 
     function countDown() {
         var remainSeconds = $("#remainSeconds").val();
-
+        var timeout;
         //秒杀还没开始，倒计时
         if (remainSeconds > 0) {
             $("#buyButton").attr("disabled", true);
-            $("#seckillTip").html("秒杀倒计时： " + remainSeconds + "秒");
-            timeout = setTimeout(function () {
-        // $("#countDown").text(remainSeconds - 1);
+            $("#seckillTip").html("秒杀倒计时： " + remainSeconds + "秒"); timeout = setTimeout(function () {
+            // $("#countDown").text(remainSeconds - 1);
                     $("#remainSeconds").val(remainSeconds - 1);
                     countDown();
                 },
@@ -222,10 +233,15 @@
                 clearTimeout(timeout);
             }
             $("#seckillTip").html("秒杀进行中");
-        //秒杀已经结束
+            $("#captchaImg").attr("src", "/seckill/captcha?goodsId=" + $("#goodsId").val())
+            $("#captchaImg").show();
+            $("#captcha").show();
+//秒杀已经结束
         } else {
             $("#buyButton").attr("disabled", true);
             $("#seckillTip").html("秒杀已经结束");
+            $("#captchaImg").hide();
+            $("#captcha").hide();
         }
     }
 </script>

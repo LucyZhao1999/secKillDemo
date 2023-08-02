@@ -1,6 +1,7 @@
 package com.example.seckill.controller;
 
 import com.baomidou.mybatisplus .core.conditions.query.QueryWrapper ;
+import com.example.seckill.exception.GlobalException;
 import com.example.seckill.pojo.Order;
 import com.example.seckill.pojo.SeckillMessage;
 import com.example.seckill.pojo.SeckillOrder ;
@@ -13,7 +14,10 @@ import com.example.seckill.utils.JsonUtil;
 import com.example.seckill.vo.GoodsVo;
 import com.example.seckill.vo.RespBean;
 import com.example .seckill.vo.RespBeanEnum ;
+import com.wf.captcha.ArithmeticCaptcha;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework .beans.factory.InitializingBean ;
 import org.springframework .beans.factory.annotation.Autowired;
 import org.springframework .data.redis.core.RedisTemplate ;
@@ -27,10 +31,12 @@ import org.springframework .web.bind.annotation.RequestMapping ;
 import org.springframework .web.bind.annotation.RequestMethod ;
 import org.springframework .web.bind.annotation.ResponseBody;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -42,6 +48,7 @@ import java.util.Map;
  * @author zhoubin
  * @since 1.0.0
  */
+@Slf4j
 @Controller
 @RequestMapping("/seckill")
 public class SeckillController {
@@ -165,8 +172,35 @@ public class SeckillController {
         }
         String str = orderService .createPath(user,goodsId);
         return RespBean.success(str);
-
     }
+
+    /**
+     * 验证码 *
+     * @param user
+     * @param goodsId
+     * @return
+     */
+    @RequestMapping(value = "/captcha", method = RequestMethod .GET)
+    public void verifyCode(User user, Long goodsId, HttpServletResponse response) {
+        if (null==user||goodsId<0){
+        throw new GlobalException(RespBeanEnum .REQUEST_ILLEGAL);
+    }
+        // 设置请求头为输出图片类型
+        response.setContentType("image/jpg");
+        response.setHeader("Pragma", "No-cache");
+        response.setHeader("Cache-Control" , "no-cache");
+        response.setDateHeader("Expires", 0);
+        //生成验证码，将结果放入redis
+        ArithmeticCaptcha captcha = new ArithmeticCaptcha(130, 32, 3);
+
+        redisTemplate .opsForValue().set("captcha:"+user.getUserId()+":"+goodsId,captcha.text (),300, TimeUnit.SECONDS);
+        try {
+            captcha.out(response.getOutputStream());
+        } catch (IOException e) {
+            log.error("验证码生成失败",e.getMessage());
+        }
+    }
+
 }
 
 
