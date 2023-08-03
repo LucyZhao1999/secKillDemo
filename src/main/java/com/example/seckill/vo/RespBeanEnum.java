@@ -29,8 +29,9 @@ public enum RespBeanEnum {
     EMPTY_STOCK(500500,"库存不足"),
     REPEATE_ERROR(500501,"该商品每人限购一件"),
     REQUEST_ILLEGAL(500502,"请求非法,请重新尝试"),
+    ERROR_CAPTCHA(500503, "订单信息不存在"),
     //订单模块5003x
-    ORDER_NOT_EXIST(500300,"订单信息不存在")
+    ORDER_NOT_EXIST(500300,"订单信息不存在"),
     ;
 
     private final Integer code;

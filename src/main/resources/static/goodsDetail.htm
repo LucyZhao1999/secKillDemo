@@ -86,12 +86,14 @@
 
     function getSeckillPath() {
         var goodsId = $("#goodsId").val();
+        var captcha = $("#captcha").val();
         g_showLoading();
         $.ajax({
             url: "/seckill/path" ,
             type: "GET",
             data: {
                 goodsId: goodsId,
+                captcha: captcha
             },
             success: function (data) {
                 if (data.code == 200) {
@@ -107,6 +109,7 @@
             }
         })
     }
+
 
 
     function doSeckill(path) {

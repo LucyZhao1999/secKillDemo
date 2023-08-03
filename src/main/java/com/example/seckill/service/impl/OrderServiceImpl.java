@@ -145,6 +145,24 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return str;
     }
 
+    /**
+     * 校验验证码 *
+     * @param user
+     * @param goodsId
+     * @param captcha
+     * @return
+     */
+    @Override
+    public boolean checkCaptcha(User user, Long goodsId, String captcha) {
+        if (StringUtils .isEmpty(captcha) ||null==user||goodsId<0){
+
+        return false;
+    }
+        String redisCaptcha = (String) redisTemplate .opsForValue().get("captcha:" + user.getUserId() + ":" + goodsId);
+        return redisCaptcha .equals(captcha);
+    }
+
+
 
 }
 
